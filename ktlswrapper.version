@@ -1,0 +1,8 @@
+{
+    global:
+        tls_connect;
+
+    local:
+        *;
+};
+
