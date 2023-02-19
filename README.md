@@ -25,11 +25,12 @@ to 64 KB max), plus we also enjoy using `PR_SET_PDEATHSIG` to clean up child pro
 `trade-balancer` is also gcc-only because we like to use endian-defined structs for the websocket header.
 
 
-Start by increasing your system maximum pipe size:
+Start by increasing your system maximum pipe size and default network read buffer max size:
 ```bash
 echo 0 > /proc/sys/fs/pipe-user-pages-soft
 echo 0 > /proc/sys/fs/pipe-user-pages-hard
 echo 2147483648 > /proc/sys/fs/pipe-max-size
+echo 4194304 > /proc/sys/net/core/rmem_max
 ```
 
 The value 2147483648 is `2^31 (or 1 << 31)` and it's the maximum as enforced by the kernel
@@ -42,7 +43,7 @@ modprobe tls
 
 Next, populate the `mbedtls` submodule if it isn't already populated:
 ```bash
-git submodule init; git submodule checkout
+git submodule update --init --checkout
 ```
 
 Now we should be ready to build:
@@ -88,7 +89,6 @@ Running:
 
 Examples:
 ```bash
-./lb AZ8jfdjslkfdjs wss://alpaca.socket.polygon.io/stocks 57 ~/bin/ ~/bin/stock-analysis.py
 ./lb AZ8jfdjslkfdjs wss://socket.polygon.io/stocks 31 ~/repos/stock/ /usr/local/bin/pipenv run ~/repos/stock/analyze.py
 ./lb AZ8jfdjslkfdjs wss://delayed.polygon.io/stocks 79 /mnt/data-storage ./only-log-from-pipes
 ./lb AZ8jfdjslkfdjs ws://127.0.0.1:9943/dev-replay-api 27 ~/repos/stock /usr/local/bin/pipenv run ~/repos/stock/analyze.py
